@@ -55,6 +55,9 @@ age_group_labels = {
     'cases_80': '80+'
 }
 
+# Define the order of age groups
+age_group_order = ['0-4', '5-11', '12-17', '18-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+']
+
 # Update the Age Group column using the mapping dictionary
 total_cases_by_age['Age Group'] = total_cases_by_age['Age Group'].map(age_group_labels)
 
@@ -64,8 +67,12 @@ fig_age.update_layout(xaxis_title='Age Group', yaxis_title='Total Cases')
 # Calculate percentages
 total_cases_by_age['Percentage'] = (total_cases_by_age['Total Cases'] / total_cases_by_age['Total Cases'].sum()) * 100
 
+# Sort data by Age Group
+total_cases_by_age = total_cases_by_age.sort_values(by='Age Group')
+
 # Plot pie chart
-fig_pie = px.pie(total_cases_by_age, values='Percentage', names='Age Group', title='Percentage of Total Cases by Age Group')
+fig_pie = px.pie(total_cases_by_age, values='Percentage', names='Age Group', title='Percentage of Total Cases by Age Group',
+                 category_orders={'Age Group': age_group_order})
 fig_pie.update_traces(textposition='inside', textinfo='percent+label')
 
 # Plot the Malaysia data and statistics by age group
