@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from data.mongodb import cases_malaysia, cases_state
 
 # Set page configuration
 st.set_page_config(
@@ -12,8 +13,6 @@ st.set_page_config(
 # Title and description
 st.title('COVID-19 Cases Dashboard')
 st.markdown('This page displays the new COVID-19 cases by date for each state and the whole of Malaysia.')
-
-from data.mongodb import cases_malaysia, cases_state
 
 # Plot the Malaysia data
 fig_malaysia = px.line(cases_malaysia, x='date', y='cases_new', title='New COVID-19 Cases in Malaysia')
