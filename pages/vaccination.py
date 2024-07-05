@@ -76,8 +76,10 @@ with st.container():
 
 st.divider()
 
-# Filter data by state (example: selecting data for a specific state)
-state = st.selectbox('Select State', vax_demog_age['state'].unique())
+col1, col2 = st.columns([0.3, 0.7])
+with col1:
+    # Filter data by state (example: selecting data for a specific state)
+    state = st.selectbox('Select State', vax_demog_age['state'].unique())
 
 filtered_data = vax_demog_age[vax_demog_age['state'] == state]
 
