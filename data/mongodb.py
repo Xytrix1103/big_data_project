@@ -1,7 +1,7 @@
 import pandas as pd
 from pymongo import MongoClient
 
-cases_malaysia, cases_state, interest_rates, ridership_headline, vax_malaysia, vax_district = None, None, None, None, None, None
+cases_malaysia, cases_state, interest_rates, ridership_headline, vax_malaysia, vax_district, vax_demog_age = None, None, None, None, None, None, None
 
 # export data from MongoDB
 uri = "mongodb+srv://admin:admin@bigdataproject.zcgwhyg.mongodb.net/?retryWrites=true&w=majority&appName=BigDataProject"
@@ -35,6 +35,10 @@ if 'vax_malaysia' in collections:
 if 'vax_district' in collections:
     vax_district = pd.DataFrame(list(db['vax_district'].find()))
     vax_district = vax_district.drop('_id', axis=1)
+
+if 'vax_demog_age' in collections:
+    vax_demog_age = pd.DataFrame(list(db['vax_demog_age'].find()))
+    vax_demog_age = vax_demog_age.drop('_id', axis=1)
 
 # Close the connection
 client.close()
