@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
 from data.mongodb import cases_malaysia, cases_state
 
@@ -26,7 +25,7 @@ max_daily_cases_malaysia = cases_malaysia['cases_new'].max()
 # Plot the Malaysia data and statistics for new cases
 with st.container():
     st.subheader('Malaysia COVID-19 Cases Overview')
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([3, 1], gap='medium', vertical_alignment='center')
     with col1:
         st.plotly_chart(fig_malaysia, use_container_width=True)
     with col2:
@@ -91,7 +90,7 @@ st.subheader('Filter by State')
 states = cases_state['state'].unique()
 
 with st.container():
-    col1, col2 = st.columns([0.3, 0.7])
+    col1, col2 = st.columns([0.3, 0.7], gap='medium', vertical_alignment='center')
     with col1:
         selected_state = st.selectbox('Select a state to view the COVID-19 cases data.', states)
 
@@ -110,7 +109,7 @@ max_daily_cases_state = filtered_state_data['cases_new'].max()
 # Plot the state data and statistics for new cases
 with st.container():
     st.subheader('COVID-19 Cases by States Overview')
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([3, 1], gap='medium', vertical_alignment='center')
     with col1:
         st.plotly_chart(fig_state, use_container_width=True)
     with col2:
@@ -121,7 +120,7 @@ with st.container():
 
 # Plot the state data by vaccination status
 with st.container():
-    col1, col2, col3 = st.columns([2, 2, 1])
+    col1, col2, col3 = st.columns([2, 2, 1], gap='medium', vertical_alignment='center')
     with col1:
         fig_unvax = px.line(filtered_state_data, x='date', y='cases_unvax', title=f'New Unvaccinated COVID-19 Cases in {selected_state}')
         fig_unvax.update_layout(xaxis_title='Date', yaxis_title='Unvaccinated Cases')
