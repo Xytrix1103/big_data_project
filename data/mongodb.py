@@ -1,5 +1,6 @@
 import pandas as pd
 from pymongo import MongoClient
+import geojson
 
 cases_malaysia, cases_state, interest_rates, ridership_headline, vax_malaysia, vax_district, vax_demog_age = None, None, None, None, None, None, None
 
@@ -39,6 +40,19 @@ if 'vax_district' in collections:
 if 'vax_demog_age' in collections:
     vax_demog_age = pd.DataFrame(list(db['vax_demog_age'].find()))
     vax_demog_age = vax_demog_age.drop('_id', axis=1)
+    
+if 'population_district' in collections:
+    population_district = pd.DataFrame(list(db['population_district'].find()))
+    population_district = population_district.drop('_id', axis=1)
+
+if 'malaysia_district_geojson' in collections:
+    geojson_document = db['malaysia_district_geojson'].find_one({}, {'_id': 0}) 
+    if geojson_document and geojson_document.get('type') == "FeatureCollection" and 'features' in geojson_document:
+        malaysia_district_geojson = geojson.loads(geojson.dumps(geojson_document)) 
+    else:
+        raise Exception("GeoJSON data not found or invalid format.")
+else:
+    raise Exception("Collection 'malaysia_district_geojson' not found in the database.")
 
 # Close the connection
 client.close()
