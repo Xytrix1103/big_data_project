@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # Title and description
-st.title('COVID-19 Cases Dashboard')
+st.header('COVID-19 Cases Dashboard', divider='rainbow')
 st.markdown('This page displays the new COVID-19 cases by date for each state and the whole of Malaysia.')
 
 # Plot the Malaysia data

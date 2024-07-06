@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Title and description
-st.title('Public Transportation Ridership and Vaccination Trends Dashboard')
+st.header('Public Transportation Ridership and Vaccination Trends Dashboard', divider='rainbow')
 st.markdown('This page displays the ridership data for public transportation in Malaysia alongside the vaccination trends.')
 
 # Load data from MongoDB and convert date columns to datetime
