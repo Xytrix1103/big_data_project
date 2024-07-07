@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import json
-from data.mongodb import cases_malaysia, hospital, icu, deaths_malaysia, vax_malaysia, cases_state, vax_state
+from data.mongodb import cases_malaysia, hospital, icu, deaths_malaysia, vax_malaysia, cases_state
 
 # Set page configuration
 st.set_page_config(
@@ -73,62 +73,65 @@ def get_filtered_data(data_category):
     return cases_state.groupby('state')[data_category].sum().reindex(states)
 
 with st.container():
-   col1, col2, = st.columns([0.85, 0.15], gap='medium', vertical_alignment='bottom')
-   with col1:
-      st.subheader('Summary of COVID-19 situation in Malaysia', divider='blue')
-   with col2:
-      st.write(f'Last updated: {latest_date}')
+    col1, col2, = st.columns([0.80, 0.20], gap='medium', vertical_alignment='bottom')
+    with col1:
+        st.subheader('Summary of COVID-19 situation in Malaysia', divider='blue')
+    with col2:
+        st.write(f'Last updated: {latest_date}')
 
 with st.container(border=True):
-   malaysiaCol, statesCol = st.columns([0.6, 0.4], gap='medium', vertical_alignment='center')
-   with malaysiaCol:
-      with st.container():
-         col1, col2, col3, col4, col5 = st.columns([1, 0.5, 1, 0.5, 1], gap='medium', vertical_alignment='center')
-         with col1:
-            st.metric(':face_with_thermometer: Total Cases', total_cases)
-            with st.expander('Details'):
-               st.metric('Unvaccinated Cases', total_unvax)
-               st.metric('Partially Vaccinated Cases', total_partial)
-               st.metric('Fully Vaccinated Cases', total_full)
-         with col2:
-            st.header(':arrow_right:')
-         with col3:
-            st.metric(':hospital: Total Hospital Admissions', total_admissions)
-            st.metric(':bed: Total ICU Admissions', total_icu)
-            st.metric(':syringe: Total Full Vaccinations', total_vax)
-         with col4:
-            st.header(':arrow_right:')
-            st.header(':arrow_right:')
-         with col5:
-            st.metric(':shield: Total Recovered', total_discharged)
-            st.metric(':skull: Total Deaths', total_deaths)
-   with statesCol:
-      # Selected data category (default is 'cases_new')
-      category_labels = {
-          'cases_new': 'New Cases',
-          'cases_recovered': 'Recovered Cases',
-          'cases_unvax': 'Unvaccinated Cases',
-          'cases_pvax': 'Partially Vaccinated Cases',
-          'cases_fvax': 'Fully Vaccinated Cases'
-      }
-      selected_category = st.radio(
-          "Select Data Category", 
-          list(category_labels.keys()), 
-          format_func=lambda x: category_labels[x],
-          index=0, 
-          horizontal=True
-      )
-      # Get data for selected category
-      filtered_data = get_filtered_data(selected_category)
+    malaysiaCol, statesCol = st.columns([0.6, 0.4], gap='medium', vertical_alignment='center')
+    with malaysiaCol:
+        with st.container():
+            col1, col2, col3, col4, col5 = st.columns([1, 0.3, 1, 0.3, 1], gap='medium', vertical_alignment='center')
+            with col1:
+                st.metric(':face_with_thermometer: Total Cases', total_cases)
+                with st.expander('Details'):
+                    st.metric('Unvaccinated Cases', total_unvax)
+                    st.metric('Partially Vaccinated Cases', total_partial)
+                    st.metric('Fully Vaccinated Cases', total_full)
+            with col2:
+                st.header(':arrow_right:')
+            with col3:
+                st.metric(':hospital: Total Hospital Admissions', total_admissions)
+                st.metric(':bed: Total ICU Admissions', total_icu)
+                st.metric(':syringe: Total Full Vaccinations', total_vax)
+            with col4:
+                st.header(':arrow_right:')
+                st.header(':arrow_right:')
+            with col5:
+                st.metric(':shield: Total Recovered', total_discharged)
+                st.metric(':skull: Total Deaths', total_deaths)
+    with statesCol:
+        # Selected data category (default is 'cases_new')
+        category_labels = {
+            'cases_new': 'New Cases',
+            'cases_recovered': 'Recovered Cases',
+            'cases_unvax': 'Unvaccinated Cases',
+            'cases_pvax': 'Partially Vaccinated Cases',
+            'cases_fvax': 'Fully Vaccinated Cases'
+        }
+        selected_category = st.radio(
+            "Select Data Category", 
+            list(category_labels.keys()), 
+            format_func=lambda x: category_labels[x],
+            index=0, 
+            horizontal=True
+        )
+        # Get data for selected category
+        filtered_data = get_filtered_data(selected_category)
 
-      max_value = filtered_data.max() if filtered_data.max() != 0 else 1  # To avoid division by zero
-      for state in states:
-         state_row = st.columns([0.25, 0.15, 0.6])
-         state_row[0].markdown(f"<span style='color:yellow'>{state}</span>", unsafe_allow_html=True)
-         value = filtered_data[state]
-         state_row[1].write(f"{value:,}")
-         state_row[2].progress(value / max_value)
-    
+        # Sort states by descending order of values
+        sorted_states = filtered_data.sort_values(ascending=False).index.tolist()
+
+        max_value = filtered_data.max() if filtered_data.max() != 0 else 1 
+        for state in sorted_states:
+            state_row = st.columns([0.20, 0.20, 0.6])
+            state_row[0].markdown(f"<span style='color:yellow'>{state}</span>", unsafe_allow_html=True)
+            value = filtered_data[state]
+            state_row[1].write(f"{value:,}")
+            state_row[2].progress(value / max_value)
+        
 # Load Malaysia district GeoJSON data
 with open('data/geojson/malaysia.districts.geojson') as f:
     malaysia_district_geojson = json.load(f)
@@ -183,20 +186,21 @@ def plot_vaccination_rates(vaccination_rates_df, geojson_data):
     # Update the layout
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     st.plotly_chart(fig)
-    
-# Sidebar selection
-all_states = ["All States"] + list(vax_district['state'].unique())
-selected_state = st.sidebar.selectbox("Select State", all_states)
+
+# Display the title and description
+st.subheader("Vaccination Rates by District in each State in Malaysia", divider='blue')
+
+with st.container():
+    col1, col2 = st.columns([0.3, 0.7], gap='medium', vertical_alignment='center')
+    with col1:
+        all_states = ["All States"] + list(vax_district['state'].unique())
+        selected_state = st.selectbox("Select State", all_states)
 
 # Filter data based on selected state
 if selected_state == "All States":
     state_data = vax_district
 else:
     state_data = vax_district[vax_district['state'] == selected_state]
-
-# Display the title and description
-st.title("Vaccination Rates by District in each State in Malaysia")
-st.markdown("This page displays the vaccination rates by district in each state in Malaysia.")
 
 # Calculate vaccination rates
 vaccination_rates_df = calculate_vaccination_rates(state_data, population_district)
