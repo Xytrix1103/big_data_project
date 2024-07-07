@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Title and description
-st.title('Economy Dashboard')
+st.header('Economy Dashboard', divider='rainbow')
 st.markdown('This page displays the impact of COVID-19 on bank interest rates.')
 
 # Convert date columns to datetime

@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Title and description
-st.title('Vaccination Dashboard')
+st.header('Vaccination Dashboard', divider='rainbow')
 st.markdown('This page displays the vaccination progress in Malaysia.')
 
 # Load data from MongoDB and convert date columns to datetime
