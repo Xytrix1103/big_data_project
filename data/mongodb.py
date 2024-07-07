@@ -1,6 +1,5 @@
 import pandas as pd
 from pymongo import MongoClient
-import geojson
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -21,17 +20,6 @@ def query_collection(collection_name, projection=None, skip=0, limit=0):
     end_time = time.time()
     print(f"{collection_name} query time (skip: {skip}, limit: {limit}): {end_time - start_time:.2f} seconds")
     return data
-
-def query_geojson_collection(collection_name, skip=0, limit=0):
-    start_time = time.time()
-    geojson_document = db[collection_name].find_one({}, {'_id': 0})
-    end_time = time.time()
-    if geojson_document and geojson_document.get('type') == "FeatureCollection" and 'features' in geojson_document:
-        malaysia_district_geojson = geojson.loads(geojson.dumps(geojson_document))
-        print(f"{collection_name} query time: {end_time - start_time:.2f} seconds")
-        return malaysia_district_geojson
-    else:
-        raise Exception("GeoJSON data not found or invalid format.")
 
 # Projections for collections
 projections = {
@@ -69,15 +57,9 @@ with ThreadPoolExecutor() as executor:
         ranges = split_query('vax_demog_age', projections['vax_demog_age'])
         for skip, limit in ranges:
             future_to_collection[executor.submit(query_collection, 'vax_demog_age', projections['vax_demog_age'], skip, limit)] = 'vax_demog_age'
-    
-    if 'malaysia_district_geojson' in collections:
-        ranges = split_query('malaysia_district_geojson', None)
-        for skip, limit in ranges:
-            future_to_collection[executor.submit(query_geojson_collection, 'malaysia_district_geojson', skip, limit)] = 'malaysia_district_geojson'
 
     cases_state_parts = []
     vax_demog_age_parts = []
-    geojson_parts = []
 
     for future in as_completed(future_to_collection):
         collection_name = future_to_collection[future]
@@ -98,16 +80,12 @@ with ThreadPoolExecutor() as executor:
             cases_state_parts.append(result)
         elif collection_name == 'vax_demog_age':
             vax_demog_age_parts.append(result)
-        elif collection_name == 'malaysia_district_geojson':
-            geojson_parts.append(result)
 
     # Combine parts for split queries
     if cases_state_parts:
         cases_state = pd.concat(cases_state_parts, ignore_index=True)
     if vax_demog_age_parts:
         vax_demog_age = pd.concat(vax_demog_age_parts, ignore_index=True)
-    if geojson_parts:
-        malaysia_district_geojson = geojson.FeatureCollection([feature for part in geojson_parts for feature in part['features']])
 
 # Close the connection
 client.close()

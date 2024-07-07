@@ -1,8 +1,12 @@
-from data.mongodb import vax_district, population_district, malaysia_district_geojson
+from data.mongodb import vax_district, population_district
 import streamlit as st
 import plotly.express as px
 import pandas as pd
 import json
+
+# Load Malaysia district GeoJSON data
+with open('data/geojson/malaysia.districts.geojson') as f:
+    malaysia_district_geojson = json.load(f)
 
 # Calculate vaccination rates
 def calculate_vaccination_rates(vax_district, population_district):
