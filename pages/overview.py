@@ -83,7 +83,7 @@ with st.container(border=True):
     malaysiaCol, statesCol = st.columns([0.6, 0.4], gap='medium', vertical_alignment='center')
     with malaysiaCol:
         with st.container():
-            col1, col2, col3, col4, col5 = st.columns([1, 0.3, 1, 0.3, 1], gap='medium', vertical_alignment='center')
+            col1, col2, col3, col4, col5 = st.columns([0.9, 0.3, 1, 0.3, 0.9], gap='medium', vertical_alignment='center')
             with col1:
                 st.metric(':face_with_thermometer: Total Cases', total_cases)
                 st.metric('Unvaccinated Cases', total_unvax)
@@ -92,15 +92,15 @@ with st.container(border=True):
             with col2:
                 st.header(':arrow_right:')
             with col3:
-                st.metric(':hospital: Total Hospital Admissions', total_admissions)
-                st.metric(':bed: Total ICU Admissions', total_icu)
-                st.metric(':syringe: Total Full Vaccinations', total_vax)
+                st.metric(':hospital: Hospital Admissions', total_admissions)
+                st.metric(':bed: ICU Admissions', total_icu)
+                st.metric(':syringe: Full Vaccinations', total_vax)
             with col4:
                 st.header(':arrow_right:')
-                st.header(':arrow_right:')
+
             with col5:
-                st.metric(':shield: Total Recovered', total_discharged)
-                st.metric(':skull: Total Deaths', total_deaths)
+                st.metric(':shield: Recovered', total_discharged)
+                st.metric(':skull: Deaths', total_deaths)
     with statesCol:
         # Selected data category (default is 'cases_new')
         category_labels = {
