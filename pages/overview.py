@@ -86,10 +86,9 @@ with st.container(border=True):
             col1, col2, col3, col4, col5 = st.columns([1, 0.3, 1, 0.3, 1], gap='medium', vertical_alignment='center')
             with col1:
                 st.metric(':face_with_thermometer: Total Cases', total_cases)
-                with st.expander('Details'):
-                    st.metric('Unvaccinated Cases', total_unvax)
-                    st.metric('Partially Vaccinated Cases', total_partial)
-                    st.metric('Fully Vaccinated Cases', total_full)
+                st.metric('Unvaccinated Cases', total_unvax)
+                st.metric('Partially Vaccinated Cases', total_partial)
+                st.metric('Fully Vaccinated Cases', total_full)
             with col2:
                 st.header(':arrow_right:')
             with col3:
