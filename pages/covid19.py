@@ -145,6 +145,8 @@ with st.container():
         st.metric('Total Fully Vaccinated Cases', f'{total_cases_fvax:,}')
         st.metric('Avg Daily Fully Vaccinated Cases', f'{average_daily_cases_fvax:.2f}')
 
+st.divider()
+
 # Load the joblib model
 model = joblib.load('models/new_cases.joblib')
 
@@ -192,12 +194,12 @@ fig_forecast.add_trace(
         color_discrete_sequence=['red']
     ).data[0]
 )
-fig_forecast.update_traces(connectgaps=True)
 fig_forecast.update_layout(xaxis_title='Date', yaxis_title='New Cases')
 
 # Render the plot for the forecasted data
 with st.container():
     st.subheader('7-Day Forecast of New COVID-19 Cases in Malaysia')
+    st.write('The forecasted data is shown in red, while the last 14 days of data is shown in blue for comparison.')
     st.plotly_chart(fig_forecast, use_container_width=True)
 
 st.divider()
