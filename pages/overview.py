@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import json
-from data.mongodb import cases_malaysia, hospital, icu, deaths_malaysia, vax_malaysia, cases_state
+from data.mongodb import cases_malaysia, hospital, icu, deaths_malaysia, vax_malaysia, cases_state, deaths_state
 
 # Set page configuration
 st.set_page_config(
@@ -206,3 +206,30 @@ vaccination_rates_df = calculate_vaccination_rates(state_data, population_distri
 
 # Display the vaccination rates DataFrame
 plot_vaccination_rates(vaccination_rates_df, malaysia_district_geojson)
+
+# Display the title and description
+st.subheader("Summary of COVID-19 situation of each State in Malaysia", divider='blue')
+
+# Merge dataframes on 'date' and 'state'
+merged_df = cases_state.merge(hospital, on=['date', 'state'], how='left')
+merged_df = merged_df.merge(icu, on=['date', 'state'], how='left')
+merged_df = merged_df.merge(deaths_state, on=['date', 'state'], how='left')
+
+# Drop the 'date' column before grouping and summing
+merged_df = merged_df.drop(columns=['date'])
+
+# Group by state and sum the values
+state_summary = merged_df.groupby('state').sum().reset_index()
+
+# Columns to keep for the final table
+columns_to_keep = ['state', 'cases_new', 'cases_recovered', 'cases_unvax', 'cases_pvax', 'cases_fvax', 'admitted_covid', 'icu_covid', 'deaths_new']
+
+# Final summary dataframe
+summary_df = state_summary[columns_to_keep]
+summary_df.columns = ['State', 'Total Cases', 'Recovered Cases', 'Unvaccinated Cases', 'Partially Vaccinated Cases', 'Fully Vaccinated Cases', 'Hospital Admissions', 'ICU Admissions', 'Deaths']
+
+# Ensure no NaN values (fill with 0)
+summary_df = summary_df.fillna(0)
+
+# Display the dataframe as a table
+st.dataframe(summary_df, height=600)
