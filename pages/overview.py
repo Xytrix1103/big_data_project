@@ -75,7 +75,7 @@ def get_filtered_data(data_category):
 with st.container():
     col1, col2, = st.columns([0.80, 0.20], gap='medium', vertical_alignment='bottom')
     with col1:
-        st.subheader('Summary of COVID-19 situation in Malaysia', divider='blue')
+        st.subheader('Summary of COVID-19 situation in Malaysia')
     with col2:
         st.write(f'Last updated: {latest_date}')
 
@@ -186,8 +186,10 @@ def plot_vaccination_rates(vaccination_rates_df, geojson_data):
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     st.plotly_chart(fig)
 
+st.divider()
+
 # Display the title and description
-st.subheader("Vaccination Rates by District in each State in Malaysia", divider='blue')
+st.subheader("Vaccination Rates by District in each State in Malaysia")
 
 with st.container():
     col1, col2 = st.columns([0.3, 0.7], gap='medium', vertical_alignment='center')
@@ -207,8 +209,10 @@ vaccination_rates_df = calculate_vaccination_rates(state_data, population_distri
 # Display the vaccination rates DataFrame
 plot_vaccination_rates(vaccination_rates_df, malaysia_district_geojson)
 
+st.divider()
+
 # Display the title and description
-st.subheader("Summary of COVID-19 situation of each State in Malaysia", divider='blue')
+st.subheader("Summary of COVID-19 situation of each State in Malaysia")
 
 # Merge dataframes on 'date' and 'state'
 merged_df = cases_state.merge(hospital, on=['date', 'state'], how='left')
