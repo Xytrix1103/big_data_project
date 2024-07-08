@@ -1,5 +1,8 @@
-import streamlit as st
+import joblib
+import pandas as pd
 import plotly.express as px
+import streamlit as st
+
 from data.mongodb import cases_malaysia, cases_state
 
 # Set page configuration
@@ -33,11 +36,12 @@ with st.container():
         st.metric('Total Cases', f'{total_cases_malaysia:,}')
         st.metric('Average Daily Cases', f'{average_daily_cases_malaysia:.2f}')
         st.metric('Highest Single-Day Increase', f'{max_daily_cases_malaysia:,}')
-        
+
 st.divider()
 
 # Add bar chart for age groups below Malaysia cases graph
-age_groups = ['cases_0_4', 'cases_5_11', 'cases_12_17', 'cases_18_29', 'cases_30_39', 'cases_40_49', 'cases_50_59', 'cases_60_69', 'cases_70_79', 'cases_80']
+age_groups = ['cases_0_4', 'cases_5_11', 'cases_12_17', 'cases_18_29', 'cases_30_39', 'cases_40_49', 'cases_50_59', 'cases_60_69',
+              'cases_70_79', 'cases_80']
 total_cases_by_age = cases_malaysia[age_groups].sum().reset_index()
 total_cases_by_age.columns = ['Age Group', 'Total Cases']
 # Mapping dictionary for age group labels
@@ -139,3 +143,44 @@ with st.container():
         st.metric('Avg Daily Unvaccinated Cases', f'{average_daily_cases_unvax:.2f}')
         st.metric('Total Fully Vaccinated Cases', f'{total_cases_fvax:,}')
         st.metric('Avg Daily Fully Vaccinated Cases', f'{average_daily_cases_fvax:.2f}')
+
+# Load the joblib model
+model = joblib.load('models/new_cases.joblib')
+
+# Set the number of days to forecast
+forecast_days = 7
+
+# Get the last 14 days of data
+last_14_days = cases_malaysia.tail(14)
+
+# Prepare the data for forecasting
+data = pd.DataFrame(cases_malaysia)
+data['date'] = pd.to_datetime(data['date'])
+data['timestamp'] = (data['date'] - data['date'].min()).dt.days
+
+# Create a dataframe for the next 7 days to forecast
+next_days = pd.DataFrame({'timestamp': range(data['timestamp'].max() + 1, data['timestamp'].max() + 1 + forecast_days)})
+
+# Predict the number of cases for the next 7 days
+forecast = model.predict(next_days)
+forecast = forecast.astype(int)  # Convert the forecasted values to integers
+
+# Create a dataframe for the forecasted data
+forecast_data = pd.DataFrame({
+    'date': pd.date_range(start=data['date'].max() + pd.Timedelta(days=1), periods=forecast_days),
+    'cases_new': forecast
+})
+
+# Combine the actual and forecasted data
+combined_data = pd.concat([last_14_days, forecast_data])
+
+# Plot the 21-day forecast
+fig_forecast = px.line(combined_data, x='date', y='cases_new', title='7-Day Forecast of New COVID-19 Cases in Malaysia')
+fig_forecast.update_layout(xaxis_title='Date', yaxis_title='New Cases')
+
+# Plot the 21-day forecast
+with st.container():
+    st.subheader('7-Day Forecast of New COVID-19 Cases in Malaysia')
+    st.plotly_chart(fig_forecast, use_container_width=True)
+
+st.divider()
