@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-cases_malaysia, cases_state, interest_rates, ridership_headline, vax_malaysia, vax_district, vax_demog_age, hospital, icu, deaths_malaysia, population_district = None, None, None, None, None, None, None, None, None, None, None
+cases_malaysia, cases_state, interest_rates, ridership_headline, vax_malaysia, vax_district, vax_demog_age, hospital, icu, deaths_malaysia, population_district, deaths_state = None, None, None, None, None, None, None, None, None, None, None, None
 
 # Export data from MongoDB
 uri = "mongodb+srv://admin:admin@bigdataproject.zcgwhyg.mongodb.net/?retryWrites=true&w=majority&appName=BigDataProject"
@@ -31,6 +31,7 @@ projections = {
     'vax_demog_age': {'_id': 0, 'date': 1, 'state': 1, 'partial_5_11': 1, 'full_5_11': 1, 'booster_5_11': 1, 'booster2_5_11': 1, 'partial_12_17': 1, 'full_12_17': 1, 'booster_12_17': 1, 'booster2_12_17': 1, 'partial_18_29': 1, 'full_18_29': 1, 'booster_18_29': 1, 'booster2_18_29': 1, 'partial_30_39': 1, 'full_30_39': 1, 'booster_30_39': 1, 'booster2_30_39': 1, 'partial_40_49': 1, 'full_40_49': 1, 'booster_40_49': 1, 'booster2_40_49': 1, 'partial_50_59': 1, 'full_50_59': 1, 'booster_50_59': 1, 'booster2_50_59': 1, 'partial_60_69': 1, 'full_60_69': 1, 'booster_60_69': 1, 'booster2_60_69': 1, 'partial_70_79': 1, 'full_70_79': 1, 'booster_70_79': 1, 'booster2_70_79': 1, 'partial_80': 1, 'full_80': 1, 'booster_80': 1, 'booster2_80': 1},
     'population_district': {'_id': 0, 'state': 1, 'district': 1, 'population': 1},
     'deaths_malaysia': {'_id': 0, 'date': 1, 'deaths_new': 1},
+    'deaths_state': {'_id': 0, 'date': 1, 'state': 1, 'deaths_new': 1},
     'hospital': {'_id': 0, 'date': 1, 'state': 1, 'admitted_covid': 1},
     'icu': {'_id': 0, 'date': 1, 'state': 1, 'icu_covid': 1}
 }
@@ -80,6 +81,8 @@ with ThreadPoolExecutor() as executor:
             population_district = result
         elif collection_name == 'deaths_malaysia':
             deaths_malaysia = result
+        elif collection_name == 'deaths_state':
+            deaths_state = result
         elif collection_name == 'hospital':
             hospital = result
         elif collection_name == 'icu':
