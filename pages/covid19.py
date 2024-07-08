@@ -2,6 +2,7 @@ import joblib
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from plotly.graph_objs import Figure
 
 from data.mongodb import cases_malaysia, cases_state
 
@@ -171,14 +172,30 @@ forecast_data = pd.DataFrame({
     'cases_new': forecast
 })
 
-# Combine the actual and forecasted data
-combined_data = pd.concat([last_14_days, forecast_data])
-
-# Plot the 21-day forecast
-fig_forecast = px.line(combined_data, x='date', y='cases_new', title='7-Day Forecast of New COVID-19 Cases in Malaysia')
+# Plot the forecasted data with the last 14 days of data in different colors for comparison
+fig_forecast = Figure()
+fig_forecast.add_trace(
+    px.line(
+        pd.concat([last_14_days, forecast_data.head(1)]),
+        x='date',
+        y='cases_new',
+        title='New COVID-19 Cases in Malaysia',
+        color_discrete_sequence=['blue']
+    ).data[0]
+)
+fig_forecast.add_trace(
+    px.line(
+        forecast_data,
+        x='date',
+        y='cases_new',
+        title='New COVID-19 Cases in Malaysia',
+        color_discrete_sequence=['red']
+    ).data[0]
+)
+fig_forecast.update_traces(connectgaps=True)
 fig_forecast.update_layout(xaxis_title='Date', yaxis_title='New Cases')
 
-# Plot the 21-day forecast
+# Render the plot for the forecasted data
 with st.container():
     st.subheader('7-Day Forecast of New COVID-19 Cases in Malaysia')
     st.plotly_chart(fig_forecast, use_container_width=True)
