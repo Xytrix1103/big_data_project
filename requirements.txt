@@ -5,3 +5,5 @@ numpy
 pymongo
 plotly
 geojson
+scikit-learn
+joblib
