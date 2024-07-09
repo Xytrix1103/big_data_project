@@ -12,11 +12,11 @@ db = client['data']
 collections = db.list_collection_names()
 
 
-def query_collection(collection_name, projection=None, skip=0, limit=0):
+def query_collection(collection_name, projection=None):
     start_time = time.time()
-    data = pd.DataFrame(list(db[collection_name].find({}, projection).skip(skip).limit(limit)))
+    data = pd.DataFrame(list(db[collection_name].find({}, projection)))
     end_time = time.time()
-    print(f"{collection_name} query time (skip: {skip}, limit: {limit}): {end_time - start_time:.2f} seconds")
+    print(f"{collection_name} query time: {end_time - start_time:.2f} seconds")
     return data
 
 
