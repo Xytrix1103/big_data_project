@@ -1,7 +1,8 @@
-pip~=23.3
-streamlit
-pandas
-numpy
-pymongo
-plotly
-geojson
+streamlit~=1.36.0
+pandas~=2.2.2
+numpy~=2.0.0
+pymongo~=4.8.0
+plotly~=5.22.0
+scikit-learn~=1.5.1
+joblib~=1.4.2
+matplotlib~=3.9.1

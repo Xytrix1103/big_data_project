@@ -1,7 +1,8 @@
-import streamlit as st
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
+import streamlit as st
+
 from data.mongodb import cases_malaysia, interest_rates
 
 # Set page configuration
@@ -41,12 +42,12 @@ merged_data['month_year'] = merged_data['month_year'].astype(str)
 fig_dual_axis = go.Figure()
 
 # Add traces for monthly cases
-fig_dual_axis.add_trace(go.Scatter(x=merged_data['month_year'], y=merged_data['cases_new'], 
+fig_dual_axis.add_trace(go.Scatter(x=merged_data['month_year'], y=merged_data['cases_new'],
                                    mode='lines', name='Monthly Cases',
                                    yaxis='y', line=dict(color='blue')))
 
 # Add traces for interest rates
-fig_dual_axis.add_trace(go.Scatter(x=merged_data['month_year'], y=merged_data['value'], 
+fig_dual_axis.add_trace(go.Scatter(x=merged_data['month_year'], y=merged_data['value'],
                                    mode='lines', name='FDR 1-Month Interest Rate',
                                    yaxis='y2', line=dict(color='red')))
 
@@ -67,14 +68,14 @@ with st.container():
 st.divider()
 
 with st.container():
-    col1, col2 = st.columns([3, 1], gap='medium', vertical_alignment='center') 
+    col1, col2 = st.columns([3, 1], gap='medium', vertical_alignment='center')
     with col1:
         # Display the line graph for monthly interest rates separately
         st.subheader('Fixed Deposit Rate 1-Month Interest Rates in Malaysia')
-        st.plotly_chart(px.line(filtered_interest_rates, x='date', y='value', 
-                                title='FDR 1-Month Interest Rates in Malaysia', 
-                                labels={'date': 'Date', 'value': 'Interest Rate (%)'}), 
-                        use_container_width=True)    
+        st.plotly_chart(px.line(filtered_interest_rates, x='date', y='value',
+                                title='FDR 1-Month Interest Rates in Malaysia',
+                                labels={'date': 'Date', 'value': 'Interest Rate (%)'}),
+                        use_container_width=True)
     with col2:
         # Calculate summary statistics for interest rates
         lowest_interest_rate = filtered_interest_rates.loc[filtered_interest_rates['value'].idxmin()]
@@ -82,5 +83,9 @@ with st.container():
 
         # Display summary statistics
         st.subheader('Interest Rates Summary')
-        st.write(f'Lowest Interest Rate: {lowest_interest_rate["value"]:.2f}% in {lowest_interest_rate["month_year"].strftime("%B %Y")}')
-        st.write(f'Highest Interest Rate: {highest_interest_rate["value"]:.2f}% in {highest_interest_rate["month_year"].strftime("%B %Y")}')
+        st.write(
+            f'Lowest Interest Rate: {lowest_interest_rate["value"]:.2f}% in {lowest_interest_rate["month_year"].strftime("%B %Y")}')
+        st.write(
+            f'Highest Interest Rate: {highest_interest_rate["value"]:.2f}% in {highest_interest_rate["month_year"].strftime("%B %Y")}')
+
+st.divider()
