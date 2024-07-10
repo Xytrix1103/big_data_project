@@ -157,9 +157,11 @@ fig_stacked_bar.update_xaxes(ticktext=list(age_group_map.values()), tickvals=lis
 # Rename legend labels for clarity and show only for the first 4 categories
 legend_labels = {'partial': 'Partial', 'full': 'Full', 'booster': 'Booster', 'booster2': 'Booster 2'}
 fig_stacked_bar.for_each_trace(
-    lambda trace: trace.update(name=legend_labels[trace.name.split('_')[0]]) if trace.name.split('_')[
-                                                                                    0] in legend_labels else trace.update(
+    lambda trace: trace.update(name=legend_labels[trace.name.split('_')[0]]) if trace.name.split('_')[0] in legend_labels else trace.update(
         showlegend=False))
+
+# Only show legend for first trace
+fig_stacked_bar.update_layout(showlegend=True)
 
 # Display the stacked bar chart for vaccination distribution by age group
 with st.container():
@@ -218,59 +220,5 @@ with st.container():
 
     st.write(f'Mean Squared Error: {mse:.2f}')
     st.write(f'Mean Absolute Error: {mae:.2f}')
-
-st.divider()
-
-df_latest_vax = pd.read_csv(
-    'https://raw.githubusercontent.com/MoH-Malaysia/covid19-public/main/vaccination/vax_malaysia.csv'
-)
-
-# Convert date column to datetime
-df_latest_vax['date'] = pd.to_datetime(df_latest_vax['date'])
-
-# Filter data for the last 2 weeks of data in database
-latest_db_data = merged_data[merged_data['date'] >= merged_data['date'].max() - pd.DateOffset(weeks=2)]
-
-# Get last date in the database, and the next date for forecast
-last_date = merged_data['date'].max()
-
-# Get all records from df_latest_vax that are after the last date in the database
-latest_vax_data = df_latest_vax[df_latest_vax['date'] > last_date][['date', 'cumul_full']]
-
-# Predict the number of new cases based on the cumulative full vaccinations
-X_latest = latest_vax_data[['cumul_full']]
-predictions_latest = model.predict(X_latest)
-
-df_forecasted = pd.DataFrame({'date': latest_vax_data['date'], 'cases_new': predictions_latest})
-
-# Append last date data from the database to the latest_vax_data
-df_forecasted = pd.concat([merged_data[merged_data['date'] == last_date], df_forecasted])
-
-# Create a line plot for forecasted new cases
-fig_forecast = go.Figure()
-
-# Add actual new cases to the plot
-fig_forecast.add_trace(
-    go.Scatter(x=latest_db_data['date'], y=latest_db_data['cases_new'], name='Actual New Cases', mode='lines'))
-
-# Add forecasted new cases to the plot
-fig_forecast.add_trace(
-    go.Scatter(x=df_forecasted['date'], y=df_forecasted['cases_new'], name='Forecasted New Cases', mode='lines'))
-
-# Customize the layout for the plot
-fig_forecast.update_layout(
-    title='Forecasted New Cases',
-    xaxis=dict(title='Date'),
-    yaxis=dict(title='Number of New Cases'),
-    legend=dict(title='Data', x=1.1, y=1),
-    template='plotly_dark',
-    hovermode='x unified'
-)
-
-# Display the line chart for forecasted new cases
-with st.container():
-    st.subheader('Forecasted New Cases')
-    st.write('The model forecasts the number of new cases based on the cumulative full vaccinations.')
-    st.plotly_chart(fig_forecast, use_container_width=True)
 
 st.divider()
