@@ -38,7 +38,7 @@ projections = {
                       'booster_80': 1, 'booster2_80': 1},
     'population_district': {'_id': 0, 'state': 1, 'district': 1, 'population': 1},
     'deaths_malaysia': {'_id': 0, 'date': 1, 'deaths_new': 1},
-    'deaths_state': {'_id': 0, 'date': 1, 'state': 1, 'deaths_new': 1},
+    'deaths_state': {'_id': 0, 'date': 1, 'state': 1, 'deaths_new': 1, 'deaths_pvax': 1, 'deaths_fvax': 1, 'deaths_unvax': 1, 'deaths_boost': 1},
     'hospital': {'_id': 0, 'date': 1, 'state': 1, 'admitted_covid': 1},
     'icu': {'_id': 0, 'date': 1, 'state': 1, 'icu_covid': 1}
 }

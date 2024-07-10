@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from data.mongodb import vax_malaysia, cases_malaysia, vax_demog_age
+from data.mongodb import vax_malaysia, cases_malaysia, vax_demog_age, deaths_state
 
 # Set page configuration
 st.set_page_config(
@@ -20,6 +20,8 @@ st.markdown('This page displays the vaccination progress in Malaysia.')
 # Load data from MongoDB and convert date columns to datetime
 vax_malaysia['date'] = pd.to_datetime(vax_malaysia['date'])
 cases_malaysia['date'] = pd.to_datetime(cases_malaysia['date'])
+vax_demog_age['date'] = pd.to_datetime(vax_demog_age['date'])
+deaths_state['date'] = pd.to_datetime(deaths_state['date'])
 
 # Merge datasets on date to synchronize data
 merged_data = pd.merge(vax_malaysia, cases_malaysia, on='date', how='inner')
@@ -68,9 +70,6 @@ fig_dual.update_layout(
     hovermode='x unified'
 )
 
-# Load data from MongoDB and convert necessary columns
-vax_demog_age['date'] = pd.to_datetime(vax_demog_age['date'])
-
 with st.container():
     st.subheader('Cumulative Vaccinations Progress in Malaysia')
     col1, col2, col3 = st.columns([1, 1, 1], gap='medium')
@@ -101,6 +100,9 @@ col1, col2 = st.columns([0.3, 0.7])
 with col1:
     # Filter data by state (example: selecting data for a specific state)
     state = st.selectbox('Select State', vax_demog_age['state'].unique())
+
+# Merge deaths state with vaccination demographic age data
+vax_demog_age = pd.merge(vax_demog_age, deaths_state, on=['date', 'state'], how='inner')
 
 filtered_data = vax_demog_age[vax_demog_age['state'] == state]
 
@@ -176,10 +178,33 @@ fig_stacked_bar.for_each_trace(
     lambda trace: trace.update(name=legend_labels[trace.name.split('_')[0]]) if trace.name.split('_')[0] in legend_labels else trace.update(
         showlegend=False))
 
+# Data for pie chart: deaths by vaccination status
+deaths_columns = ['deaths_unvax', 'deaths_pvax', 'deaths_fvax', 'deaths_boost']
+deaths_labels = {
+    'deaths_unvax': 'Unvaccinated',
+    'deaths_pvax': 'Partially Vaccinated',
+    'deaths_fvax': 'Fully Vaccinated',
+    'deaths_boost': 'Boosted'
+}
+
+total_deaths_by_vax_status = filtered_data[deaths_columns].sum().reset_index()
+total_deaths_by_vax_status.columns = ['Vaccination Status', 'Total Deaths']
+total_deaths_by_vax_status['Vaccination Status'] = total_deaths_by_vax_status['Vaccination Status'].map(deaths_labels)
+total_deaths_by_vax_status['Percentage'] = (total_deaths_by_vax_status['Total Deaths'] / total_deaths_by_vax_status['Total Deaths'].sum()) * 100
+
+fig_pie_deaths = px.pie(total_deaths_by_vax_status, values='Percentage', names='Vaccination Status',
+                        title=f'Percentage of Total Deaths by Vaccination Status in {state}')
+fig_pie_deaths.update_traces(textposition='inside', textinfo='percent+label')
+
 # Display the stacked bar chart for vaccination distribution by age group
 with st.container():
-    st.subheader('Vaccination Distribution by Age Group')
-    st.plotly_chart(fig_stacked_bar, use_container_width=True)
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.subheader('Vaccination Distribution by Age Group')
+        st.plotly_chart(fig_stacked_bar, use_container_width=True)
+    with col2:
+        st.subheader('Total Deaths by Vaccination Status')
+        st.plotly_chart(fig_pie_deaths, use_container_width=True)
 
 st.divider()
 
