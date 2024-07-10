@@ -160,9 +160,6 @@ fig_stacked_bar.for_each_trace(
     lambda trace: trace.update(name=legend_labels[trace.name.split('_')[0]]) if trace.name.split('_')[0] in legend_labels else trace.update(
         showlegend=False))
 
-# Only show legend for first trace
-fig_stacked_bar.update_layout(showlegend=True)
-
 # Display the stacked bar chart for vaccination distribution by age group
 with st.container():
     st.subheader('Vaccination Distribution by Age Group')
