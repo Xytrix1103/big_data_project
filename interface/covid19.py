@@ -35,8 +35,6 @@ with st.container():
         st.metric('Average Daily Cases', f'{average_daily_cases_malaysia:.2f}')
         st.metric('Highest Single-Day Increase', f'{max_daily_cases_malaysia:,}')
 
-st.divider()
-
 # Add bar chart for age groups below Malaysia cases graph
 age_groups = ['cases_0_4', 'cases_5_11', 'cases_12_17', 'cases_18_29', 'cases_30_39', 'cases_40_49', 'cases_50_59',
               'cases_60_69',
