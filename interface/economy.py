@@ -14,7 +14,7 @@ st.set_page_config(
 
 # Title and description
 st.header('Economy Dashboard', divider='rainbow')
-st.markdown('This page displays the impact of COVID-19 on bank interest rates.')
+st.markdown('This page displays the impact of COVID-19 on commercial bank interest rates.')
 
 # Convert date columns to datetime
 interest_rates['date'] = pd.to_datetime(interest_rates['date'])
@@ -62,7 +62,7 @@ fig_dual_axis.update_layout(
 
 # Display the dual-axis line chart
 with st.container():
-    st.subheader('Monthly Cases vs. FDR 1-Month Interest Rates Overview (since 2020)')
+    st.subheader('Monthly Cases vs. Commercial Banks FDR 1-Month Interest Rates Overview (since 2020)')
     st.plotly_chart(fig_dual_axis, use_container_width=True)
 
 st.divider()
@@ -71,7 +71,7 @@ with st.container():
     col1, col2 = st.columns([3, 1], gap='medium', vertical_alignment='center')
     with col1:
         # Display the line graph for monthly interest rates separately
-        st.subheader('Fixed Deposit Rate 1-Month Interest Rates in Malaysia')
+        st.subheader('Commercial Banks Fixed Deposit Rate 1-Month Interest Rates in Malaysia')
         st.plotly_chart(px.line(filtered_interest_rates, x='date', y='value',
                                 title='FDR 1-Month Interest Rates in Malaysia',
                                 labels={'date': 'Date', 'value': 'Interest Rate (%)'}),
