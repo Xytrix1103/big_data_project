@@ -1,5 +1,4 @@
 import time
-
 import pandas as pd
 from pymongo import MongoClient
 
@@ -11,14 +10,12 @@ client = MongoClient(uri)
 db = client['data']
 collections = db.list_collection_names()
 
-
 def query_collection(collection_name, projection=None):
     start_time = time.time()
     data = pd.DataFrame(list(db[collection_name].find({}, projection)))
     end_time = time.time()
     print(f"{collection_name} query time: {end_time - start_time:.2f} seconds")
     return data
-
 
 # Projections for collections
 projections = {
@@ -70,3 +67,45 @@ print(f"Total query time: {total_end_time - total_start_time:.2f} seconds")
 
 # Close the connection
 client.close()
+
+# Preprocessing function
+def preprocess_data(df, name):
+    print(f"\nProcessing {name}...")
+
+    # Initial count
+    initial_count = len(df)
+    print(f"Initial count: {initial_count}")
+
+    # Check for missing values
+    missing_values = df.isnull().sum().sum()
+    print(f"Missing values: {missing_values}")
+
+    # Drop rows with missing values
+    df = df.dropna()
+
+    # Check for duplicates
+    duplicates = df.duplicated().sum()
+    print(f"Duplicates: {duplicates}")
+
+    # Drop duplicates
+    df = df.drop_duplicates()
+
+    # Final count
+    final_count = len(df)
+    print(f"Final count: {final_count}")
+
+    return df
+
+# Preprocess each dataset
+cases_malaysia = preprocess_data(cases_malaysia, 'cases_malaysia')
+cases_state = preprocess_data(cases_state, 'cases_state')
+interest_rates = preprocess_data(interest_rates, 'interest_rates')
+ridership_headline = preprocess_data(ridership_headline, 'ridership_headline')
+vax_malaysia = preprocess_data(vax_malaysia, 'vax_malaysia')
+vax_district = preprocess_data(vax_district, 'vax_district')
+vax_demog_age = preprocess_data(vax_demog_age, 'vax_demog_age')
+hospital = preprocess_data(hospital, 'hospital')
+icu = preprocess_data(icu, 'icu')
+deaths_malaysia = preprocess_data(deaths_malaysia, 'deaths_malaysia')
+deaths_state = preprocess_data(deaths_state, 'deaths_state')
+population_district = preprocess_data(population_district, 'population_district')
