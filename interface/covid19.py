@@ -179,7 +179,6 @@ with st.container():
         st.metric('Avg Daily Booster Dose Cases', f'{average_daily_cases_boost:.2f}')
 
 with st.container():
-    st.subheader('COVID-19 Cases by Age Group Overview')
     col1, col2 = st.columns([3, 2], gap='medium', vertical_alignment='center')
 
     # Add bar chart for age groups below Malaysia cases graph
