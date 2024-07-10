@@ -1,7 +1,9 @@
-import streamlit as st
-import plotly.graph_objects as go
-import plotly.express as px
+import joblib
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
+
 from data.mongodb import vax_malaysia, cases_malaysia, vax_demog_age
 
 # Set page configuration
@@ -35,7 +37,8 @@ fig_dual = go.Figure()
 fig_dual.add_trace(go.Scatter(x=merged_data['date'], y=merged_data['cumul_full'], name='Cumulative Full Vaccinations', yaxis='y1'))
 
 # Add new cases data to the plot
-fig_dual.add_trace(go.Scatter(x=merged_data['date'], y=merged_data['cases_new'], name='New Cases', yaxis='y2', line=dict(color='firebrick')))
+fig_dual.add_trace(
+    go.Scatter(x=merged_data['date'], y=merged_data['cases_new'], name='New Cases', yaxis='y2', line=dict(color='firebrick')))
 
 # Customize the layout for dual-axis
 fig_dual.update_layout(
@@ -151,9 +154,63 @@ fig_stacked_bar.update_xaxes(ticktext=list(age_group_map.values()), tickvals=lis
 
 # Rename legend labels for clarity and show only for the first 4 categories
 legend_labels = {'partial': 'Partial', 'full': 'Full', 'booster': 'Booster', 'booster2': 'Booster 2'}
-fig_stacked_bar.for_each_trace(lambda trace: trace.update(name=legend_labels[trace.name.split('_')[0]]) if trace.name.split('_')[0] in legend_labels else trace.update(showlegend=False))
+fig_stacked_bar.for_each_trace(
+    lambda trace: trace.update(name=legend_labels[trace.name.split('_')[0]]) if trace.name.split('_')[0] in legend_labels else trace.update(
+        showlegend=False))
 
 # Display the stacked bar chart for vaccination distribution by age group
 with st.container():
     st.subheader('Vaccination Distribution by Age Group')
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
+
+st.divider()
+
+# Load the joblib model
+model = joblib.load('models/vax_to_cases.joblib')
+
+# predict the number of new cases based on the cumulative full vaccinations, and compare with the actual new cases
+# Declare the model inputs and outputs
+X = merged_data[['cumul_full']]
+y = merged_data['cases_new']
+
+# Perform prediction
+predictions = model.predict(X)
+predictions = predictions.astype(int)
+
+# Create a line plot for actual and predicted new cases
+fig_predictions = go.Figure()
+
+# Add actual new cases to the plot
+fig_predictions.add_trace(go.Scatter(x=merged_data['date'], y=merged_data['cases_new'], name='Actual New Cases', mode='lines'))
+
+# Add predicted new cases to the plot
+fig_predictions.add_trace(go.Scatter(x=merged_data['date'], y=predictions, name='Predicted New Cases', mode='lines'))
+
+# Customize the layout for the plot
+fig_predictions.update_layout(
+    title='Actual vs Predicted New Cases',
+    xaxis=dict(title='Date'),
+    yaxis=dict(title='Number of New Cases'),
+    legend=dict(title='Data', x=1.1, y=1),
+    template='plotly_dark',
+    hovermode='x unified'
+)
+
+# Display the line chart for actual and predicted new cases
+with st.container():
+    st.subheader('Actual vs Predicted New Cases')
+    st.write('The model predicts the number of new cases based on the cumulative full vaccinations.')
+    st.plotly_chart(fig_predictions, use_container_width=True)
+
+    # Calculate spearman correlation and evaluate the model
+    correlation = merged_data['cumul_full'].corr(merged_data['cases_new'], method='spearman')
+    st.write(f'Spearman Correlation between cumulative full vaccinations and new cases: {correlation:.2f}')
+
+    # Calculate evaluation metrics
+    from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+    mse = mean_squared_error(y, predictions)
+    mae = mean_absolute_error(y, predictions)
+
+    st.write(f'Mean Squared Error: {mse:.2f}')
+    st.write(f'Mean Absolute Error: {mae:.2f}')
