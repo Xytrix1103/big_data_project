@@ -110,12 +110,11 @@ with st.container(border=True):
             'cases_pvax': 'Partially Vaccinated Cases',
             'cases_fvax': 'Fully Vaccinated Cases'
         }
-        selected_category = st.radio(
+        selected_category = st.selectbox(
             "Select Data Category", 
-            list(category_labels.keys()), 
+            options=list(category_labels.keys()), 
             format_func=lambda x: category_labels[x],
-            index=0, 
-            horizontal=True
+            index=0
         )
         # Get data for selected category
         filtered_data = get_filtered_data(selected_category)
