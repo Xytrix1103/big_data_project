@@ -89,3 +89,11 @@ with st.container():
             f'Highest Interest Rate: {highest_interest_rate["value"]:.2f}% in {highest_interest_rate["month_year"].strftime("%B %Y")}')
 
 st.divider()
+
+# Display the data tables for interest rates data
+st.subheader('Commercial Banks Fixed Deposit Rate 1-Month Interest Rates in Malaysia')
+# Format date to YYYY-MM-DD, order by latest date
+filtered_interest_rates['date'] = filtered_interest_rates['date'].dt.strftime('%Y-%m-%d')
+filtered_interest_rates = filtered_interest_rates.sort_values('date', ascending=False)
+
+st.dataframe(filtered_interest_rates, height=600)

@@ -102,3 +102,13 @@ st.divider()
 with st.container():
     st.subheader('Public Transportation Ridership and Vaccination Trends')
     st.plotly_chart(fig_dual, use_container_width=True)
+
+st.divider()
+
+# Display the data tables for ridership data
+st.subheader('Public Transportation Ridership Data')
+# Format date to YYYY-MM-DD, order by latest date
+ridership_headline['date'] = ridership_headline['date'].dt.strftime('%Y-%m-%d')
+ridership_headline = ridership_headline.sort_values('date', ascending=False)
+
+st.dataframe(ridership_headline, height=600)

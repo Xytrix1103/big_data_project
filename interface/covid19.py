@@ -208,3 +208,14 @@ with st.container():
         st.plotly_chart(fig_pie_state, use_container_width=True)
 
 st.divider()
+
+# Display the data table for cases_state
+st.subheader('COVID-19 Cases by State')
+
+# Drop the 'date' column
+cases_state = cases_state.drop(columns=['date'])
+summed_state_data = cases_state.groupby('state').sum().reset_index()
+# Format the column names, replacing underscores with spaces and capitalizing the first letter
+summed_state_data.columns = [col.replace('_', ' ').title() for col in summed_state_data.columns]
+
+st.dataframe(summed_state_data, height=600)

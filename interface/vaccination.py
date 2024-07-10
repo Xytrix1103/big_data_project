@@ -235,3 +235,20 @@ with st.container():
     st.write(f'Mean Absolute Error: {mae:.2f}')
 
 st.divider()
+
+# Aggregate data to get the total sum by state
+summed_states_data = vax_demog_age.groupby('state')[[col for grp in age_groups for col in grp['columns']]].sum().reset_index()
+
+# Function to format column names
+def format_column_name(col):
+    parts = col.split('_')
+    if len(parts) == 3:
+        return f'{parts[0].capitalize()}: Age {parts[1]} to {parts[2]}'
+    else:
+        return col.capitalize()
+
+# Update column titles
+summed_states_data.columns = ['State'] + [format_column_name(col) for col in summed_states_data.columns[1:]]
+
+st.subheader('Summary Vaccination by Age Group in Malaysia')
+st.dataframe(summed_states_data, height=600)
