@@ -27,7 +27,7 @@ projections = {
                     'cases_40_49': 1, 'cases_50_59': 1, 'cases_60_69': 1, 'cases_70_79': 1, 'cases_80': 1},
     'interest_rates': {'_id': 0, 'date': 1, 'bank': 1, 'rate': 1, 'value': 1},
     'ridership_headline': {'_id': 0, 'date': 1, 'rail_lrt_ampang': 1, 'rail_mrt_kajang': 1, 'rail_lrt_kj': 1, 'rail_monorail': 1},
-    'vax_malaysia': {'_id': 0, 'date': 1, 'cumul_full': 1},
+    'vax_malaysia': {'_id': 0, 'date': 1, 'cumul_full': 1, 'cumul_partial': 1, 'cumul_booster': 1, 'cumul_booster2': 1},
     'vax_district': {'_id': 0, 'date': 1, 'state': 1, 'district': 1, 'cumul_full': 1},
     'vax_demog_age': {'_id': 0, 'date': 1, 'state': 1, 'partial_5_11': 1, 'full_5_11': 1, 'booster_5_11': 1, 'booster2_5_11': 1,
                       'partial_12_17': 1, 'full_12_17': 1, 'booster_12_17': 1, 'booster2_12_17': 1, 'partial_18_29': 1, 'full_18_29': 1,

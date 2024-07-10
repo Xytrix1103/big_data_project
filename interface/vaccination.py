@@ -25,10 +25,25 @@ cases_malaysia['date'] = pd.to_datetime(cases_malaysia['date'])
 merged_data = pd.merge(vax_malaysia, cases_malaysia, on='date', how='inner')
 
 # Create a line plot for cumulative full vaccinations
-fig_vaccination = px.line(merged_data, x='date', y='cumul_full',
+fig_full_vaccination = px.line(merged_data, x='date', y='cumul_full',
                           title='Cumulative Full Vaccinations in Malaysia',
                           labels={'date': 'Date', 'cumul_full': 'Cumulative Full Vaccinations'},
                           template='plotly_dark')
+
+fig_partial_vaccination = px.line(merged_data, x='date', y='cumul_partial',
+                            title='Cumulative Partial Vaccinations in Malaysia',
+                            labels={'date': 'Date', 'cumul_partial': 'Cumulative Partial Vaccinations'},
+                            template='plotly_dark')
+
+fig_booster_vaccination = px.line(merged_data, x='date', y='cumul_booster',
+                            title='Cumulative Booster Vaccinations in Malaysia',
+                            labels={'date': 'Date', 'cumul_booster': 'Cumulative Booster Vaccinations'},
+                            template='plotly_dark')
+
+fig_booster2_vaccination = px.line(merged_data, x='date', y='cumul_booster2',
+                                title='Cumulative Second Booster Vaccinations in Malaysia',
+                                labels={'date': 'Date', 'cumul_booster2': 'Cumulative Second Booster Vaccinations'},
+                                template='plotly_dark')
 
 # Create a dual-axis plot for vaccinations and new cases
 fig_dual = go.Figure()
@@ -56,27 +71,28 @@ fig_dual.update_layout(
 # Load data from MongoDB and convert necessary columns
 vax_demog_age['date'] = pd.to_datetime(vax_demog_age['date'])
 
-# Display the plots and summary statistics
 with st.container():
-    st.subheader('Cumulative Full Vaccinations')
-    col1, col2 = st.columns([3, 1], gap='medium', vertical_alignment='center')
-
-    # Plotly chart for cumulative full vaccinations
+    st.subheader('Cumulative Vaccinations Progress in Malaysia')
+    col1, col2, col3 = st.columns([1, 1, 1], gap='medium')
     with col1:
-        st.plotly_chart(fig_vaccination, use_container_width=True)
-
-    # Summary statistics for cumulative full vaccinations
+        st.plotly_chart(fig_full_vaccination, use_container_width=True)
+        st.plotly_chart(fig_partial_vaccination, use_container_width=True)
     with col2:
-        st.subheader('Summary Statistics')
+        st.plotly_chart(fig_booster_vaccination, use_container_width=True)
+        st.plotly_chart(fig_booster2_vaccination, use_container_width=True)
+    with col3:
+        # Display summary statistics and Latest Date with format YYYY-MM-DD
+        st.subheader(f'Latest Date: {merged_data["date"].max().strftime("%Y-%m-%d")}')
         st.write(f'Highest Cumulative Full Vaccinations: {merged_data["cumul_full"].max():,.0f}')
-        st.write(f'Lowest Cumulative Full Vaccinations: {merged_data["cumul_full"].min():,.0f}')
-        st.write(f'Mean Cumulative Full Vaccinations: {merged_data["cumul_full"].mean():,.0f}')
+        st.write(f'Highest Cumulative Partial Vaccinations: {merged_data["cumul_partial"].max():,.0f}')
+        st.write(f'Highest Cumulative Booster Vaccinations: {merged_data["cumul_booster"].max():,.0f}')
+        st.write(f'Highest Cumulative Second Booster Vaccinations: {merged_data["cumul_booster2"].max():,.0f}')
 
 st.divider()
 
 # Display the dual-axis line chart for vaccinations and new cases
 with st.container():
-    st.subheader('Vaccination vs New Cases Trends')
+    st.subheader('Vaccination vs New Cases Trends in Malaysia')
     st.plotly_chart(fig_dual, use_container_width=True)
 
 st.divider()
