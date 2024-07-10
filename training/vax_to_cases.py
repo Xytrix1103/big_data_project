@@ -2,6 +2,7 @@
 import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.model_selection import GridSearchCV
 
 # Load data
@@ -39,7 +40,8 @@ plt.ylabel('Daily new cases')
 plt.title('Correlation between cumulative number of fully vaccinated individuals and daily new cases')
 plt.show()
 
-print(f'Spearman Correlation between cumulative number of fully vaccinated individuals and daily new cases: {correlation}')
+print(
+    f'Spearman Correlation between cumulative number of fully vaccinated individuals and daily new cases: {correlation}')
 
 # Perform prediction
 from sklearn.ensemble import RandomForestRegressor
@@ -66,9 +68,6 @@ model = grid_search.best_estimator_
 
 # Fit the model to the data
 model.fit(X, y)
-
-# Calculate evaluation metrics
-from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 y_pred = model.predict(X)
 

@@ -85,8 +85,10 @@ with st.container():
 
         # Display summary statistics
         st.subheader('Interest Rates Summary')
-        st.write(f'Lowest Interest Rate: {lowest_interest_rate["value"]:.2f}% in {lowest_interest_rate["month_year"].strftime("%B %Y")}')
-        st.write(f'Highest Interest Rate: {highest_interest_rate["value"]:.2f}% in {highest_interest_rate["month_year"].strftime("%B %Y")}')
+        st.write(
+            f'Lowest Interest Rate: {lowest_interest_rate["value"]:.2f}% in {lowest_interest_rate["month_year"].strftime("%B %Y")}')
+        st.write(
+            f'Highest Interest Rate: {highest_interest_rate["value"]:.2f}% in {highest_interest_rate["month_year"].strftime("%B %Y")}')
 
 st.divider()
 
