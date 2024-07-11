@@ -25,7 +25,7 @@ df = pd.merge(df_cases, df_vax, on='date', how='inner')
 print(df)
 
 # Calculate Spearman correlation and p-value
-corr_spearman, p_value_spearman = spearmanr(df['cases_new'], df['cumul_full'])
+corr_spearman, p_value_spearman = spearmanr(df['cumul_full'], df['cases_new'])
 print(f'Spearman correlation coefficient: {corr_spearman}, p-value: {p_value_spearman}')
 
 # Plot the data
