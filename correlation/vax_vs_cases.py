@@ -1,7 +1,6 @@
-# Import libraries
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import spearmanr
 
 # Load data
 df_cases = pd.read_csv('https://raw.githubusercontent.com/MoH-Malaysia/covid19-public/main/epidemic/cases_malaysia.csv')
@@ -25,9 +24,9 @@ df_vax = df_vax[(df_vax['date'] >= common_min_date) & (df_vax['date'] <= common_
 df = pd.merge(df_cases, df_vax, on='date', how='inner')
 print(df)
 
-# Calculate correlation
-correlation = df['cumul_full'].corr(df['cases_new'], method='spearman')
-print(f'Spearman Correlation between cumulative number of fully vaccinated individuals and daily new cases: {correlation}')
+# Calculate Spearman correlation and p-value
+corr_spearman, p_value_spearman = spearmanr(df['cases_new'], df['cumul_full'])
+print(f'Spearman correlation coefficient: {corr_spearman}, p-value: {p_value_spearman}')
 
 # Plot the data
 plt.figure(figsize=(10, 6))
