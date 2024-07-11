@@ -1,8 +1,7 @@
 # Import libraries
 import joblib
-import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 
 # Load data
@@ -29,23 +28,6 @@ df_vax = df_vax[(df_vax['date'] >= common_min_date) & (df_vax['date'] <= common_
 # Merge the two dataframes
 df = pd.merge(df_cases, df_vax, on='date', how='inner')
 
-# Calculate correlation
-correlation = df['cumul_full'].corr(df['cases_new'], method='spearman')
-
-# Plot the data
-plt.figure(figsize=(10, 6))
-plt.scatter(df['cumul_full'], df['cases_new'])
-plt.xlabel('Cumulative full vaccinations')
-plt.ylabel('Daily new cases')
-plt.title('Correlation between cumulative number of fully vaccinated individuals and daily new cases')
-plt.show()
-
-print(
-    f'Spearman Correlation between cumulative number of fully vaccinated individuals and daily new cases: {correlation}')
-
-# Perform prediction
-from sklearn.ensemble import RandomForestRegressor
-
 # Declare the model inputs and outputs
 X = df[['cumul_full']]
 y = df['cases_new']
@@ -70,12 +52,6 @@ model = grid_search.best_estimator_
 model.fit(X, y)
 
 y_pred = model.predict(X)
-
-mse = mean_squared_error(y, y_pred)
-mae = mean_absolute_error(y, y_pred)
-
-print(f'Mean Squared Error: {mse}')
-print(f'Mean Absolute Error: {mae}')
 
 # Save the model
 joblib.dump(model, '../models/vax_to_cases.joblib')
